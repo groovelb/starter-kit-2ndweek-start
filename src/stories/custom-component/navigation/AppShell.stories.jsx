@@ -1,10 +1,8 @@
-import { MemoryRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { AppShell } from '../../../components/navigation/AppShell';
-import { Page1, Page2, Page3 } from '../../../pages';
-import { content } from '../../../data/content';
 
 export default {
   title: 'Custom Component/Navigation/AppShell',
@@ -17,27 +15,28 @@ export default {
         component: `
 ## AppShell
 
-반응형 애플리케이션 쉘 컴포넌트.
+범용 애플리케이션 쉘 컴포넌트.
 
 ### 특징
 - GNB(헤더) + 메인 콘텐츠 영역 구성
-- GNB는 content.js에서 로고/메뉴 자동 로드
-- 모바일에서 자동으로 드로어 메뉴 전환
-- react-router-dom 연동 지원
+- props로 로고와 메뉴 커스터마이징
+- 투명/고정 헤더 옵션
         `,
       },
     },
   },
   argTypes: {
-    activeId: {
-      control: 'select',
-      options: ['brand', 'collection', 'shop'],
-      description: '현재 활성 메뉴 ID',
+    logo: {
+      control: 'text',
+      description: '로고 텍스트',
     },
-    breakpoint: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: '반응형 전환 브레이크포인트',
+    menuItems: {
+      control: 'object',
+      description: '메뉴 항목 배열',
+    },
+    activeIndex: {
+      control: { type: 'number', min: 0, max: 2 },
+      description: '활성 메뉴 인덱스',
     },
     headerHeight: {
       control: { type: 'number', min: 48, max: 96 },
@@ -65,31 +64,32 @@ export default {
 /** 기본 AppShell - Controls에서 Props 조작 가능 */
 export const Default = {
   args: {
-    activeId: 'brand',
-    breakpoint: 'md',
+    logo: 'Logo',
+    menuItems: ['Menu 1', 'Menu 2', 'Menu 3'],
+    activeIndex: 0,
     headerHeight: 64,
     hasHeaderBorder: true,
     isHeaderSticky: true,
     isHeaderTransparent: false,
   },
   render: (args) => (
-    <Box sx={ { height: 400, border: '1px solid', borderColor: 'divider' } }>
-      <AppShell { ...args }>
+    <Box sx={{ height: 400, border: '1px solid', borderColor: 'divider' }}>
+      <AppShell {...args}>
         <Box
-          sx={ {
+          sx={{
             flex: 1,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             bgcolor: 'grey.50',
-          } }
+          }}
         >
-          <Box sx={ { textAlign: 'center', p: 4 } }>
-            <Typography variant="h4" fontWeight={ 700 } gutterBottom>
+          <Box sx={{ textAlign: 'center', p: 4 }}>
+            <Typography variant="h4" fontWeight={700} gutterBottom>
               Main Content
             </Typography>
             <Typography color="text.secondary">
-              화면 크기를 조절해보세요. 모바일에서는 드로어 메뉴로 전환됩니다.
+              메뉴를 클릭하면 onMenuClick 핸들러가 호출됩니다.
             </Typography>
           </Box>
         </Box>
@@ -98,77 +98,76 @@ export const Default = {
   ),
 };
 
-/**
- * 라우터 연동 AppShell
- */
-function RouterAppShell() {
-  const navigate = useNavigate();
-  const location = useLocation();
+/** 메뉴 상태 관리 예시 */
+export const WithActiveState = {
+  render: () => {
+    const [activeIndex, setActiveIndex] = useState(0);
+    const menuItems = ['Home', 'About', 'Contact'];
 
-  // 현재 경로에서 activeId 추출
-  const menuItems = content.navigation.menuItems;
-  const activeId = menuItems.find((item) => item.path === location.pathname)?.id || 'brand';
-
-  const handleMenuClick = (item) => {
-    navigate(item.path);
-  };
-
-  return (
-    <AppShell activeId={ activeId } onMenuClick={ handleMenuClick }>
-      <Routes>
-        <Route path="/" element={ <Page1 /> } />
-        <Route path="/brand" element={ <Page1 /> } />
-        <Route path="/collection" element={ <Page2 /> } />
-        <Route path="/shop" element={ <Page3 /> } />
-        <Route path="*" element={ <Page1 /> } />
-      </Routes>
-    </AppShell>
-  );
-}
-
-/** 라우터 연동 예시 - 메뉴 클릭 시 페이지 전환 */
-export const WithRouter = {
-  render: () => (
-    <MemoryRouter initialEntries={ ['/brand'] }>
-      <Box sx={ { height: 500, border: '1px solid', borderColor: 'divider' } }>
-        <RouterAppShell />
+    return (
+      <Box sx={{ height: 400, border: '1px solid', borderColor: 'divider' }}>
+        <AppShell
+          logo="MyBrand"
+          menuItems={menuItems}
+          activeIndex={activeIndex}
+          onMenuClick={(item, index) => setActiveIndex(index)}
+        >
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: 'grey.50',
+            }}
+          >
+            <Typography variant="h5" fontWeight={600}>
+              현재 페이지: {menuItems[activeIndex]}
+            </Typography>
+          </Box>
+        </AppShell>
       </Box>
-    </MemoryRouter>
-  ),
+    );
+  },
 };
 
 /** 레이아웃 변형 비교 */
 export const LayoutVariants = {
   render: () => (
-    <Stack spacing={ 4 }>
+    <Stack spacing={4}>
       <Box>
-        <Typography variant="caption" sx={ { fontFamily: 'monospace', mb: 1, display: 'block' } }>
+        <Typography variant="caption" sx={{ fontFamily: 'monospace', mb: 1, display: 'block' }}>
           기본 레이아웃
         </Typography>
-        <Box sx={ { height: 300, border: '1px solid', borderColor: 'divider' } }>
-          <AppShell activeId="brand">
-            <Box sx={ { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.50' } }>
-              <Typography variant="h5" fontWeight={ 600 }>Content Area</Typography>
+        <Box sx={{ height: 300, border: '1px solid', borderColor: 'divider' }}>
+          <AppShell logo="Brand" menuItems={['Home', 'About', 'Contact']}>
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.50' }}>
+              <Typography variant="h5" fontWeight={600}>Content Area</Typography>
             </Box>
           </AppShell>
         </Box>
       </Box>
       <Box>
-        <Typography variant="caption" sx={ { fontFamily: 'monospace', mb: 1, display: 'block' } }>
+        <Typography variant="caption" sx={{ fontFamily: 'monospace', mb: 1, display: 'block' }}>
           투명 헤더 (Hero 섹션)
         </Typography>
-        <Box sx={ { height: 300 } }>
-          <AppShell activeId="brand" isHeaderTransparent hasHeaderBorder={ false }>
+        <Box sx={{ height: 300 }}>
+          <AppShell
+            logo="Brand"
+            menuItems={['Home', 'About', 'Contact']}
+            isHeaderTransparent
+            hasHeaderBorder={false}
+          >
             <Box
-              sx={ {
+              sx={{
                 flex: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-              } }
+              }}
             >
-              <Typography variant="h3" fontWeight={ 700 } color="white">
+              <Typography variant="h3" fontWeight={700} color="white">
                 Hero Section
               </Typography>
             </Box>

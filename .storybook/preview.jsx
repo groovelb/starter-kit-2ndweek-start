@@ -2,8 +2,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import theme from '../src/styles/themes/theme.js';
-import { TimelineProvider } from '../src/hooks/useTimeline';
-import { CartProvider } from '../src/context/CartContext';
 
 // Tiempos Headline 로컬 폰트 로드
 import tiemposHeadline from '../src/assets/font/test-tiempos-headline-vf-roman.woff2';
@@ -48,13 +46,9 @@ const preview = {
     (Story, context) => (
       <ThemeProvider theme={ theme }>
         <CssBaseline />
-        <CartProvider>
-          <TimelineProvider initialTimeline={0}>
-            <div style={ { width: '100%', paddingTop: '40px' } }>
-              { Story(context) }
-            </div>
-          </TimelineProvider>
-        </CartProvider>
+        <div style={ { width: '100%', paddingTop: '40px' } }>
+          { Story(context) }
+        </div>
       </ThemeProvider>
     ),
   ],

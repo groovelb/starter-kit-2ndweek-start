@@ -14,27 +14,28 @@ export default {
         component: `
 ## GNB
 
-반응형 Global Navigation Bar 컴포넌트.
+범용 Global Navigation Bar 컴포넌트.
 
 ### 특징
-- content.js에서 로고(brand.name)와 메뉴(navigation.menuItems) 자동 로드
-- 데스크탑: 헤더에 네비게이션 표시
-- 모바일: 햄버거 메뉴 + 드로어로 전환
+- 좌측 로고, 우측 메뉴 구성
+- props로 로고와 메뉴 항목 커스터마이징
 - 투명/고정 헤더 옵션
         `,
       },
     },
   },
   argTypes: {
-    activeId: {
-      control: 'select',
-      options: ['brand', 'collection', 'shop'],
-      description: '현재 활성 메뉴 ID',
+    logo: {
+      control: 'text',
+      description: '로고 텍스트',
     },
-    breakpoint: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: '반응형 전환 브레이크포인트',
+    menuItems: {
+      control: 'object',
+      description: '메뉴 항목 배열',
+    },
+    activeIndex: {
+      control: { type: 'number', min: 0, max: 2 },
+      description: '활성 메뉴 인덱스',
     },
     height: {
       control: { type: 'number', min: 48, max: 96 },
@@ -62,19 +63,20 @@ export default {
 /** 기본 GNB - Controls에서 Props 조작 가능 */
 export const Default = {
   args: {
-    activeId: 'brand',
-    breakpoint: 'md',
+    logo: 'Logo',
+    menuItems: ['Menu 1', 'Menu 2', 'Menu 3'],
+    activeIndex: 0,
     height: 64,
     hasBorder: true,
     isSticky: true,
     isTransparent: false,
   },
   render: (args) => (
-    <Box sx={ { height: 400 } }>
-      <GNB { ...args } />
-      <Box sx={ { p: 4, bgcolor: 'grey.50', height: '100%' } }>
+    <Box sx={{ height: 400 }}>
+      <GNB {...args} />
+      <Box sx={{ p: 4, bgcolor: 'grey.50', height: '100%' }}>
         <Typography color="text.secondary">
-          브라우저 너비를 줄여서 반응형 전환을 확인하세요.
+          메뉴를 클릭하면 onMenuClick 핸들러가 호출됩니다.
         </Typography>
       </Box>
     </Box>
@@ -84,31 +86,31 @@ export const Default = {
 /** 헤더 스타일 비교 */
 export const HeaderStyles = {
   render: () => (
-    <Stack spacing={ 4 }>
+    <Stack spacing={4}>
       <Box>
-        <Typography variant="caption" sx={ { fontFamily: 'monospace', mb: 1, display: 'block' } }>
+        <Typography variant="caption" sx={{ fontFamily: 'monospace', mb: 1, display: 'block' }}>
           hasBorder: true (기본)
         </Typography>
-        <Box sx={ { border: '1px solid', borderColor: 'divider' } }>
-          <GNB activeId="brand" hasBorder />
+        <Box sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <GNB logo="MyBrand" menuItems={['Home', 'About', 'Contact']} hasBorder />
         </Box>
       </Box>
       <Box>
-        <Typography variant="caption" sx={ { fontFamily: 'monospace', mb: 1, display: 'block' } }>
+        <Typography variant="caption" sx={{ fontFamily: 'monospace', mb: 1, display: 'block' }}>
           isTransparent: true (Hero 섹션용)
         </Typography>
-        <Box sx={ { position: 'relative' } }>
-          <GNB activeId="brand" isTransparent hasBorder={ false } />
+        <Box sx={{ position: 'relative' }}>
+          <GNB logo="MyBrand" menuItems={['Home', 'About', 'Contact']} isTransparent hasBorder={false} />
           <Box
-            sx={ {
+            sx={{
               height: 200,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-            } }
+            }}
           >
-            <Typography variant="h4" color="white" fontWeight={ 700 }>
+            <Typography variant="h4" color="white" fontWeight={700}>
               Hero Section
             </Typography>
           </Box>

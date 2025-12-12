@@ -1,58 +1,44 @@
-import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useCallback } from 'react';
-import { TimelineProvider } from './hooks/useTimeline';
-import { CartProvider } from './context/CartContext';
 import { AppShell } from './components/navigation/AppShell';
-import LandingPage from './pages/LandingPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import CheckoutPage from './pages/CheckoutPage';
-import { products } from './data/products';
-
-/**
- * 제품 상세 페이지 래퍼
- * URL 파라미터에서 productId를 추출하여 해당 제품 데이터 전달
- */
-function ProductDetailRoute() {
-  const { productId } = useParams();
-  const product = products.find((p) => p.id === Number(productId)) || products[0];
-
-  // 샘플 메타 정보 (실제로는 API에서 가져올 수 있음)
-  const meta = {
-    itemNumber: `LM-${String(product.id).padStart(3, '0')}`,
-    leadTime: '4 Weeks',
-    shipDate: 'Jan 15, 2025',
-  };
-
-  return (
-    <ProductDetailPage
-      product={{ ...product, price: 1290 }}
-      meta={meta}
-    />
-  );
-}
+import { Page1, Page2, Page3 } from './pages';
 
 /**
  * 메인 앱 레이아웃 (GNB 포함)
  *
  * 동작 방식:
- * 1. GNB의 Cart 아이콘 클릭 시 /checkout으로 이동
+ * 1. 상단에 GNB 표시 (로고 + 메뉴)
+ * 2. 메뉴 클릭 시 해당 페이지로 이동
  */
 function AppLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const menuItems = ['Home', 'About', 'Contact'];
+  const paths = ['/', '/about', '/contact'];
+
+  // 현재 경로에 맞는 activeIndex 계산
+  const activeIndex = paths.findIndex((path) => path === location.pathname);
 
   /**
-   * Cart 클릭 → /checkout으로 이동
+   * 메뉴 클릭 핸들러
    */
-  const handleCartClick = useCallback(() => {
-    navigate('/checkout');
+  const handleMenuClick = useCallback((item, index) => {
+    navigate(paths[index]);
   }, [navigate]);
 
   return (
-    <AppShell onCartClick={handleCartClick}>
+    <AppShell
+      logo="Logo"
+      menuItems={menuItems}
+      activeIndex={activeIndex >= 0 ? activeIndex : 0}
+      onMenuClick={handleMenuClick}
+    >
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/product/:productId" element={<ProductDetailRoute />} />
-        <Route path="*" element={<LandingPage />} />
+        <Route path="/" element={<Page1 />} />
+        <Route path="/about" element={<Page2 />} />
+        <Route path="/contact" element={<Page3 />} />
+        <Route path="*" element={<Page1 />} />
       </Routes>
     </AppShell>
   );
@@ -60,19 +46,9 @@ function AppLayout() {
 
 function App() {
   return (
-    <CartProvider>
-      <TimelineProvider initialTimeline={0}>
-        <BrowserRouter>
-          <Routes>
-            {/* Checkout - 독립 레이아웃 (GNB 없음) */}
-            <Route path="/checkout" element={<CheckoutPage />} />
-
-            {/* Main - AppShell 레이아웃 (GNB 포함) */}
-            <Route path="/*" element={<AppLayout />} />
-          </Routes>
-        </BrowserRouter>
-      </TimelineProvider>
-    </CartProvider>
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
   );
 }
 
