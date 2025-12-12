@@ -48,8 +48,8 @@
 
 - NavMenu: 네비게이션 메뉴 (`components/navigation/NavMenu.jsx`)
 - CategoryTab: 카테고리 탭 (`components/navigation/CategoryTab.jsx`)
-- GNB: 범용 글로벌 네비게이션 바. 로고 + 메뉴 항목 (`components/navigation/GNB.jsx`)
-- AppShell: 범용 앱 셸. GNB + 메인 콘텐츠 영역 (`components/navigation/AppShell.jsx`)
+- GNB: 반응형 글로벌 네비게이션 바. 데스크탑 메뉴 / 모바일 Drawer (`components/navigation/GNB.jsx`)
+- AppShell: 반응형 앱 셸. GNB + 메인 콘텐츠 영역 (`components/navigation/AppShell.jsx`)
 
 ### Typography
 

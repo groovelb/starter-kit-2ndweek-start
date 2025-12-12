@@ -15,12 +15,13 @@ export default {
         component: `
 ## AppShell
 
-범용 애플리케이션 쉘 컴포넌트.
+반응형 애플리케이션 쉘 컴포넌트.
 
 ### 특징
 - GNB(헤더) + 메인 콘텐츠 영역 구성
-- props로 로고와 메뉴 커스터마이징
-- 투명/고정 헤더 옵션
+- 데스크탑: 메뉴 직접 표시
+- 모바일: 햄버거 메뉴 → Drawer로 전환
+- breakpoint prop으로 전환 시점 조절
         `,
       },
     },
@@ -37,6 +38,11 @@ export default {
     activeIndex: {
       control: { type: 'number', min: 0, max: 2 },
       description: '활성 메뉴 인덱스',
+    },
+    breakpoint: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: '반응형 전환 브레이크포인트',
     },
     headerHeight: {
       control: { type: 'number', min: 48, max: 96 },
@@ -67,6 +73,7 @@ export const Default = {
     logo: 'Logo',
     menuItems: ['Menu 1', 'Menu 2', 'Menu 3'],
     activeIndex: 0,
+    breakpoint: 'md',
     headerHeight: 64,
     hasHeaderBorder: true,
     isHeaderSticky: true,
@@ -89,7 +96,10 @@ export const Default = {
               Main Content
             </Typography>
             <Typography color="text.secondary">
-              메뉴를 클릭하면 onMenuClick 핸들러가 호출됩니다.
+              브라우저 너비를 줄여서 반응형 전환을 확인하세요.
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              모바일에서 햄버거 메뉴 클릭 → Drawer 열림
             </Typography>
           </Box>
         </Box>
