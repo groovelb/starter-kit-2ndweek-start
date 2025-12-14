@@ -2,8 +2,7 @@ import { MemoryRouter, Routes, Route, useNavigate, useLocation } from 'react-rou
 import Box from '@mui/material/Box';
 import { AppShell } from '../../components/navigation/AppShell';
 import { content } from '../../data/content';
-import LandingPage from '../../pages/LandingPage';
-import { Page2, Page3 } from '../../pages';
+import { Page1, Page2, Page3 } from '../../pages';
 
 export default {
   title: 'Page/Router Demo',
@@ -45,11 +44,11 @@ function RouterDemoApp() {
   return (
     <AppShell activeId={ activeId } onMenuClick={ handleMenuClick }>
       <Routes>
-        <Route path="/" element={ <LandingPage /> } />
-        <Route path="/brand" element={ <LandingPage /> } />
+        <Route path="/" element={ <Page1 /> } />
+        <Route path="/brand" element={ <Page1 /> } />
         <Route path="/collection" element={ <Page2 /> } />
         <Route path="/shop" element={ <Page3 /> } />
-        <Route path="*" element={ <LandingPage /> } />
+        <Route path="*" element={ <Page1 /> } />
       </Routes>
     </AppShell>
   );
